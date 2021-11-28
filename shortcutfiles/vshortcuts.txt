@@ -1,2 +1,0 @@
-shift + $ <> Move cursor to line end
-shift + ^ <> Move cursor to line start
