@@ -9,45 +9,16 @@ from dotenv import load_dotenv
 DIR = pl(f"{ip.get_ipython_package_dir()}/extensions/shortcutmagic")
 load_dotenv(f"{DIR}/.env")
 
-# Custom ipython magic method documentation at: 
-# https://ipython.readthedocs.io/en/stable/config/custommagics.html
 
-@magics_class
-class ShortMagic(Magics):
+class ShortUtil:
 
-    def __init__(self, shell):
-        super(ShortMagic, self).__init__(shell)
-        self.apps = getenv("APPLICATIONS").split()
-        self.scdir = DIR.joinpath(getenv("SHORTCUT_DIR_NAME"))
-        self._create_files()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
-    @line_magic
-    def sc(self, line):
-        "Get a user defined list of IPython shortcuts"
-        file = self.ip_file
-        coms = self._open_for_read(file)
-        for i in coms:
-            line = i.split(SEP)
-            print(f"{line[0]}   :   {line[1]}")
-
-
-    @line_magic
-    def sc_add(self, line):
-        "Add to IPython shortcuts file - ishortcuts.txt"
-        file = self.ip_file
-        self._open_for_append(file)
-
-
-    @line_magic
-    def sc_edit(self,line):
-        file = self.ip_file
-        self._edit_file(file)
-
-
-    def _create_files(self):
-        for app in self.apps:
-            appath = self.scdir.joinpath(f"{app.strip()}.txt")
+    def _create_files(self, apps):
+        for app in apps:
+            appath = self.scdir.joinpath(f"{app.strip()}.sct")
             if not appath.exists():
                 appath.touch()
 
@@ -99,5 +70,43 @@ class ShortMagic(Magics):
         finally:
             fopen_for_write.writelines([f"{k} {SEP} {v}" for k,v in com_dict.items()])
             fopen_for_write.close()
+
+
+# Custom ipython magic method documentation at: 
+# https://ipython.readthedocs.io/en/stable/config/custommagics.html
+
+@magics_class
+class ShortMagic(ShortUtil, Magics):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.apps = getenv("APPLICATIONS").split()
+        self.scdir = DIR.joinpath(getenv("SHORTCUT_DIR_NAME"))
+        self._create_files(self.apps)
+
+
+    @line_magic
+    def sc(self, line):
+        "Get a user defined list of IPython shortcuts"
+        file = self.ip_file
+        coms = self._open_for_read(file)
+        for i in coms:
+            line = i.split(SEP)
+            print(f"{line[0]}   :   {line[1]}")
+
+
+    @line_magic
+    def sc_add(self, line):
+        "Add to IPython shortcuts file - ishortcuts.txt"
+        file = self.ip_file
+        self._open_for_append(file)
+
+
+    @line_magic
+    def sc_edit(self,line):
+        file = self.ip_file
+        self._edit_file(file)
+
+
 
 
