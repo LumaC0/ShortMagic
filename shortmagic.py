@@ -57,14 +57,19 @@ class ShortUtil:
             file.write(self._write_command())
 
 
-    def _edit_file(self, file=None):
+    def _open_for_clean_write(self, file, lines = None: list):
+        file = f"{DIR}/{getenv('SHORTCUT_DIR_NAME')}/{file}"
+        with open(file, "w") as file:
+            file.writelines(lines)
+
+
+    def _edit_file(self, file: list = None):
         coms = self._open_for_read(file)
         com_dict = {}
         for i in coms:
             k, v = i.split(SEP)
-            com_dict[k] = v
+            com_dict[k.strip()] = v
             print(f"{k}   :   {v}")
-
         while True:
             k = input("Command to edit (typed exactly as seen): ").strip()
             if not com_dict.get(k):
@@ -74,14 +79,9 @@ class ShortUtil:
             newk, newv = self._write_command().split(SEP)
             com_dict[newk] = newv
             break
+        scitems = [f"{k} {SEP} {v}" for k,v in com_dict.items()]
+        self._open_for_clean_write(file, scitems)
 
-        try:
-            fopen_for_write = open(file, "w")
-        except:
-            print("could not write to file")
-        finally:
-            fopen_for_write.writelines([f"{k} {SEP} {v}" for k,v in com_dict.items()])
-            fopen_for_write.close()
 
 
 # Custom ipython magic method documentation at: 
