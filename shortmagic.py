@@ -57,13 +57,13 @@ class ShortUtil:
             file.write(self._write_command())
 
 
-    def _open_for_clean_write(self, file, lines = None: list):
+    def _open_for_clean_write(self, file, lines: None = list):
         file = f"{DIR}/{getenv('SHORTCUT_DIR_NAME')}/{file}"
         with open(file, "w") as file:
             file.writelines(lines)
 
 
-    def _edit_file(self, file: list = None):
+    def _edit_file(self, file):
         coms = self._open_for_read(file)
         com_dict = {}
         for i in coms:
@@ -113,13 +113,20 @@ class ShortMagic(ShortUtil, Magics):
     @line_magic
     def sc_add(self, line):
         "Add to IPython shortcuts file - ishortcuts.txt"
-        file = self.ip_file
+        app = self._interpret_line(line, self.apps)
+        if not app:
+           return
+        file = f"{app}.sct"
         self._open_for_append(file)
 
 
     @line_magic
     def sc_edit(self,line):
-        file = self.ip_file
+        breakpoint()
+        app = self._interpret_line(line, self.apps)
+        if not app:
+           return
+        file = f"{app}.sct"
         self._edit_file(file)
 
 
