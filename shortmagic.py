@@ -10,6 +10,8 @@ DIR = pl(f"{ip.get_ipython_package_dir()}/extensions/shortcutmagic")
 
 load_dotenv(f"{DIR}/.env")
 
+SEP = getenv("SEP")
+
 
 class ShortUtil:
 
@@ -50,7 +52,8 @@ class ShortUtil:
 
 
     def _open_for_append(self, file):
-        with open(f"{DIR}/{file}", "a") as file:
+        file = f"{DIR}/{getenv('SHORTCUT_DIR_NAME')}/{file}"
+        with open(file, "a") as file:
             file.write(self._write_command())
 
 
